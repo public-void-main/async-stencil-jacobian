@@ -1,0 +1,17 @@
+# build outputs
+*.o
+*.out
+*.exe
+build/
+a.out
+# python
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
+# profiling
+*.ncu-rep
+*.nsys-rep
+# OS / editor
+.DS_Store
+.vscode/
