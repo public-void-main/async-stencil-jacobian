@@ -1,0 +1,12 @@
+GPU: NVIDIA RTX 5050 Laptop GPU
+Compute capability: 12.0
+
+Grid       Block   Threads   Time (ms)    Iterations
+512x512    16x16   256       2207.717     370380
+512x512    32x8    256       2132.818     370380
+1024x1024  16x16   256       23907.654    1250680
+1024x1024  32x8    256       21910.096    1250680
+
+Selected block size: 32x8
+Tolerance: 1e-5
+Convergence: reached for all runs

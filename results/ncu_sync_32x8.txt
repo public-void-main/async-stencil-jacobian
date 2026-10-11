@@ -1,0 +1,105 @@
+==PROF== Connected to process 12422 (/home/banana_pudding/async-stencil-jacobian/validate_32x8)
+==PROF== Profiling "jacobi_step": 0%....50%....100% - 10 passes
+GPU: NVIDIA GeForce RTX 5050 Laptop GPU
+Compute capability: 12.0
+
+====================================
+GPU                   : NVIDIA GeForce RTX 5050 Laptop GPU
+Grid size             : 512 x 512
+Block shape           : 32 x 8
+Threads per block     : 256
+Iterations            : 10000
+Final residual        : 2.42614746e-03
+Tolerance             : 9.99999975e-06
+Convergence status    : MAX ITERATIONS REACHED
+GPU time              : 1003.843 ms
+Center value          : 0.029397
+Maximum CPU/GPU error : 0.00000000e+00
+CPU/GPU RMSE          : 0.00000000e+00
+====================================
+
+====================================
+GPU                   : NVIDIA GeForce RTX 5050 Laptop GPU
+Grid size             : 1024 x 1024
+Block shape           : 32 x 8
+Threads per block     : 256
+Iterations            : 10000
+Final residual        : 2.42614746e-03
+Tolerance             : 9.99999975e-06
+Convergence status    : MAX ITERATIONS REACHED
+GPU time              : 372.777 ms
+Center value          : 0.000000
+Maximum CPU/GPU error : 0.00000000e+00
+CPU/GPU RMSE          : 0.00000000e+00
+====================================
+==PROF== Disconnected from process 12422
+[12422] validate_32x8@127.0.0.1
+  jacobi_step(const float *, float *, unsigned int *, int, int) (16, 64, 1)x(32, 8, 1), Context 1, Stream 7, Device 0, CC 12.0
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- ------------
+    Metric Name             Metric Unit Metric Value
+    ----------------------- ----------- ------------
+    DRAM Frequency                  Ghz         8.92
+    SM Frequency                    Ghz         1.49
+    Elapsed Cycles                cycle       16,138
+    Memory Throughput                 %        35.44
+    DRAM Throughput                   %        34.05
+    Duration                         us        10.82
+    L1/TEX Cache Throughput           %        44.76
+    L2 Cache Throughput               %        22.94
+    SM Active Cycles              cycle    12,775.65
+    Compute (SM) Throughput           %        40.90
+    ----------------------- ----------- ------------
+
+    OPT   This workload exhibits low compute throughput and memory bandwidth utilization relative to the peak           
+          performance of this device. Achieved compute throughput and/or memory bandwidth below 60.0% of peak           
+          typically indicate latency issues. Look at Scheduler Statistics and Warp State Statistics for potential       
+          reasons.                                                                                                      
+
+    Section: Memory Workload Analysis
+    --------------------------------------- ----------- ------------
+    Metric Name                             Metric Unit Metric Value
+    --------------------------------------- ----------- ------------
+    Local Memory Spilling Requests                                 0
+    Local Memory Spilling Request Overhead            %            0
+    L2 Sector Promotion Misses                        %            0
+    Shared Memory Spilling Requests                                0
+    Shared Memory Spilling Request Overhead           %            0
+    Memory Throughput                           Gbyte/s        97.23
+    Mem Busy                                          %        20.71
+    Max Bandwidth                                     %        35.44
+    L1/TEX Hit Rate                                   %        50.50
+    L2 Persisting Size                            Mbyte         6.29
+    L2 Compression Success Rate                       %            0
+    L2 Compression Ratio                                           0
+    L2 Compression Input Sectors                 sector            0
+    L2 Hit Rate                                       %        26.41
+    Mem Pipes Busy                                    %        40.90
+    --------------------------------------- ----------- ------------
+
+    Section: Occupancy
+    ------------------------------- ----------- ------------
+    Metric Name                     Metric Unit Metric Value
+    ------------------------------- ----------- ------------
+    Max Active Clusters                 cluster            0
+    Max Cluster Size                      block            8
+    Overall GPU Occupancy                     %            0
+    Cluster Occupancy                         %            0
+    Block Limit Barriers                  block           24
+    Block Limit SM                        block           24
+    Block Limit Registers                 block           10
+    Block Limit Shared Mem                block           16
+    Block Limit Warps                     block            6
+    Theoretical Active Warps per SM        warp           48
+    Theoretical Occupancy                     %          100
+    Achieved Occupancy                        %        77.44
+    Achieved Active Warps Per SM           warp        37.17
+    ------------------------------- ----------- ------------
+
+    OPT   Est. Local Speedup: 22.56%                                                                                    
+          The difference between calculated theoretical (100.0%) and measured achieved occupancy (77.4%) can be the     
+          result of warp scheduling overheads or workload imbalances during the kernel execution. Load imbalances can   
+          occur between warps within a block as well as across blocks of the same kernel. See the CUDA Best Practices   
+          Guide (https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html#occupancy) for more details on     
+          optimizing occupancy.                                                                                         
+

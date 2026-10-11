@@ -1,0 +1,5 @@
+grid,block_x,block_y,threads_per_block,solver_time_ms,iterations,achieved_occupancy_pct,theoretical_occupancy_pct,memory_throughput_GBps,dram_throughput_pct,compute_throughput_pct,profiled_kernel_duration_us
+512x512,16,16,256,2207.717,370380,76.91,100,94.98,33.43,40.47,11.07
+512x512,32,8,256,2132.818,370380,76.61,100,94.19,32.92,39.53,11.17
+1024x1024,16,16,256,23907.654,1250680,,,,,,
+1024x1024,32,8,256,21910.096,1250680,,,,,,
