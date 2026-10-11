@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "equation": "u_new=(u_old+r*(north+south+west+east)+dt_times_source)/(1+4*r)",
+  "precision": "float32",
+  "boundary": {
+    "type": "dirichlet",
+    "top": 100.0,
+    "bottom": 0.0,
+    "left": 0.0,
+    "right": 0.0,
+    "corner_rule": "top edge wins"
+  },
+  "sources": {
+    "point": {
+      "location": "floor(N/2),floor(N/2)",
+      "peak_dt_times_f": 1.0
+    },
+    "gaussian": {
+      "center": "floor(N/2),floor(N/2)",
+      "sigma": "N/16",
+      "peak_dt_times_f": 1.0
+    }
+  },
+  "grid_sizes": [512, 1024],
+  "source_types": ["point", "gaussian"],
+  "r_values": [1, 10, 100],
+  "strategies": ["sync", "D1", "D2", "D4", "D8"],
+  "repeats": 3,
+  "base_seed": 52,
+  "tolerance": 1e-5,
+  "residual_interval": 10,
+  "max_iters": 2000000,
+  "near_tie_fraction": 0.02,
+  "primary_metric": "median time_ms to convergence",
+  "residual_definition": "maximum absolute update sampled every residual_interval iterations",
+  "timing_scope": "GPU solve including residual checks; exclude process startup and input generation"
+}

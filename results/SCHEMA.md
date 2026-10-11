@@ -12,3 +12,7 @@ File: `results/runs.csv`
 | iters | iterations to reach tolerance |
 | time_ms | wall-clock time to convergence (CUDA events) |
 | final_residual | residual at stop |
+
+Residual histories are stored separately in `results/residual_history.csv` with
+columns `N, source, r, strategy, run_id, iteration, residual`. This preserves
+the agreed `runs.csv` schema while supporting convergence plots.

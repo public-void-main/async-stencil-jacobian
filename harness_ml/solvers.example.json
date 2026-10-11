@@ -1,0 +1,29 @@
+{
+  "commands": {
+    "sync": {
+      "command": ["build/sync_jacobi", "--N", "{N}", "--source", "{source}", "--r", "{r}", "--strategy", "sync", "--run-id", "{run_id}", "--seed", "{seed}", "--tolerance", "{tolerance}", "--residual-interval", "{residual_interval}", "--max-iters", "{max_iters}", "--json"],
+      "parser": "auto",
+      "timeout_seconds": 7200
+    },
+    "D1": {
+      "command": ["build/async_jacobi", "--N", "{N}", "--source", "{source}", "--r", "{r}", "--D", "1", "--run-id", "{run_id}", "--seed", "{seed}", "--tolerance", "{tolerance}", "--residual-interval", "{residual_interval}", "--max-iters", "{max_iters}", "--json"],
+      "parser": "auto",
+      "timeout_seconds": 7200
+    },
+    "D2": {
+      "command": ["build/async_jacobi", "--N", "{N}", "--source", "{source}", "--r", "{r}", "--D", "2", "--run-id", "{run_id}", "--seed", "{seed}", "--tolerance", "{tolerance}", "--residual-interval", "{residual_interval}", "--max-iters", "{max_iters}", "--json"],
+      "parser": "auto",
+      "timeout_seconds": 7200
+    },
+    "D4": {
+      "command": ["build/async_jacobi", "--N", "{N}", "--source", "{source}", "--r", "{r}", "--D", "4", "--run-id", "{run_id}", "--seed", "{seed}", "--tolerance", "{tolerance}", "--residual-interval", "{residual_interval}", "--max-iters", "{max_iters}", "--json"],
+      "parser": "auto",
+      "timeout_seconds": 7200
+    },
+    "D8": {
+      "command": ["build/async_jacobi", "--N", "{N}", "--source", "{source}", "--r", "{r}", "--D", "8", "--run-id", "{run_id}", "--seed", "{seed}", "--tolerance", "{tolerance}", "--residual-interval", "{residual_interval}", "--max-iters", "{max_iters}", "--json"],
+      "parser": "auto",
+      "timeout_seconds": 7200
+    }
+  }
+}

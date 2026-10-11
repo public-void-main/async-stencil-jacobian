@@ -228,3 +228,15 @@ Note: the ML references [11]-[14] concern sparse-matrix formats and triangular s
 13. "Analysis of Several Sparse Formats for Matrices used in Sparse-Matrix Dense-Matrix Multiplication for Machine Learning on GPUs," *Proc. ICTC*, 2022, doi: 10.1109/ICTC55196.2022.9952814.
 14. C. Stylianou and M. Weiland, "Optimizing Sparse Linear Algebra Through Automatic Format Selection and Machine Learning," arXiv:2303.05098, 2023.
 15. B. Shan and M. Araya-Polo, "Evaluation of Programming Models and Performance for Stencil Computation on Current GPU Architectures," arXiv:2404.04441, 2024.
+
+## 10. Role-C implementation handoff
+
+Vaibhav's assigned CPU reference, problem generator, experiment driver, result
+auditing, plots and offline decision-tree selector are implemented in
+`harness_ml/`. The shared numerical and experiment definitions are fixed in
+`harness_ml/experiment_spec.json`; CUDA owners should use
+`harness_ml/INTEGRATION_CONTRACT.md` for the minimal executable handoff.
+
+No synthetic timings are included as project results. `results/runs.csv`, final
+figures and ML conclusions must be generated only from the integrated sync and
+async CUDA executables.
