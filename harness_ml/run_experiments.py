@@ -253,7 +253,7 @@ def main() -> None:
     parser.add_argument("--r-values", type=float, nargs="+", default=[1, 10, 100])
     parser.add_argument("--strategies", nargs="+", default=list(STRATEGIES), choices=STRATEGIES)
     parser.add_argument("--repeats", type=int, default=3)
-    parser.add_argument("--tolerance", type=float, default=1.0e-5)
+    parser.add_argument("--tolerance", type=float, default=1.0e-4)
     parser.add_argument("--residual-interval", type=int, default=10)
     parser.add_argument("--max-iters", type=int, default=2_000_000)
     parser.add_argument("--rerun", action="store_true")

@@ -14,7 +14,7 @@ Both executables must use `experiment_spec.json` as the source of truth:
 - update equation:
   `u_new = (u_old + r*(north+south+west+east) + dt*f)/(1+4*r)`
 - maximum absolute update as residual, checked every 10 iterations
-- convergence when residual is strictly below `1e-5`
+- convergence when residual is strictly below `1e-4`
 
 The same boundaries and source term must be retained on every local sweep. `D`
 is the number of local shared-memory sweeps between halo refreshes.

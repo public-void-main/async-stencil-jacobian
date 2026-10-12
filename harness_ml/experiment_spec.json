@@ -27,7 +27,7 @@
   "strategies": ["sync", "D1", "D2", "D4", "D8"],
   "repeats": 3,
   "base_seed": 52,
-  "tolerance": 1e-5,
+  "tolerance": 1e-4,
   "residual_interval": 10,
   "max_iters": 2000000,
   "near_tie_fraction": 0.02,

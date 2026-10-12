@@ -42,7 +42,7 @@ def grid_after_iterations(config: ProblemConfig, iterations: int) -> np.ndarray:
 def solve_reference(
     config: ProblemConfig,
     *,
-    tolerance: float = 1.0e-5,
+    tolerance: float = 1.0e-4,
     residual_interval: int = 10,
     max_iters: int = 2_000_000,
 ) -> SolveResult:

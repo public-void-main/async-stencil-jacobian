@@ -20,7 +20,7 @@ def main() -> None:
     parser.add_argument("--strategy", default="sync")
     parser.add_argument("--run-id", type=int, default=1)
     parser.add_argument("--seed", type=int, default=52)
-    parser.add_argument("--tolerance", type=float, default=1.0e-5)
+    parser.add_argument("--tolerance", type=float, default=1.0e-4)
     parser.add_argument("--residual-interval", type=int, default=10)
     parser.add_argument("--max-iters", type=int, default=2_000_000)
     parser.add_argument("--grid-output", type=Path)

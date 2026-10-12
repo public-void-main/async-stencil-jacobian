@@ -15,9 +15,9 @@
 //   Initial interior u = 0. Fixed point = steady state, so convergence is SLOW
 //   (~N^2 iterations: reference.py gives 10700 iters at N=64, r=1).
 //   residual  = max |update| of one sweep, sampled every M=10 iterations.
-//   converged when residual < 1e-5 (strictly).
-//   NOTE: 1 ulp of float32 at 100 is 7.6e-6, just under tol, so the stop test sits at the
-//   float noise floor. Compile every solver with FMA off (nvcc -fmad=false,
+//   converged when residual < 1e-4 (strictly). (Was 1e-5, which sits at the float32 noise floor.)
+//   NOTE: 1 ulp of float32 at 100 is 7.6e-6, so the old tol of 1e-5 sat at the float noise
+//   floor (residual flickered 7.6e-6/1.1e-5/1.5e-5). 1e-4 is safely above it. Compile every solver with FMA off (nvcc -fmad=false,
 //   g++ -ffp-contract=off) so results match reference.py bit-for-bit.
 //
 // Layout: idx = y*N + x (row-major). Boundary ring is never updated.
@@ -39,7 +39,7 @@ struct Config {
     int       N         = 512;
     SourceType source   = SourceType::GAUSSIAN;
     double    r         = 1.0;         // alpha*dt/h^2
-    double    tol       = 1e-5;
+    double    tol       = 1e-4;
     int       M         = 10;          // residual interval (iterations)
     long long max_iters = 2000000;
     int       D         = 1;           // async: local sweeps per halo refresh

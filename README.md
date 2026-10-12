@@ -31,7 +31,7 @@ We solve 2D diffusion on a structured grid with a five-point **Jacobi** stencil 
 1. **Equation (implicit transient step, so convergence takes tens to hundreds of iterations):**
    `u_new = (u_old + r * (sum of 4 neighbours) + dt * f) / (1 + 4r)`, where `r = alpha*dt/h^2`
 2. **D** = number of local sweeps a block performs in shared memory between halo refreshes from global memory.
-3. **Tolerance:** residual < 1e-5. **Residual interval:** M = 10.
+3. **Tolerance:** residual < 1e-4 (raised from 1e-5: 1 ulp of float32 at 100 is 7.6e-6, so 1e-5 sits at the rounding-noise floor and the stop point was luck-dependent). **Residual interval:** M = 10.
 4. **Results CSV:** see `results/SCHEMA.md`.
 5. **Compile for RTX 5060:** CUDA 12.8+, `-arch=sm_120`.
 
