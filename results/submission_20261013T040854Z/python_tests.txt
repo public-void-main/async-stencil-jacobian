@@ -1,0 +1,42 @@
+test_complete_dataset_audit (test_harness.ExperimentRunnerTests.test_complete_dataset_audit) ... ok
+test_runner_parses_json_and_resumes (test_harness.ExperimentRunnerTests.test_runner_parses_json_and_resumes) ... run: /home/banana_pudding/async-stencil-jacobian/.venv/bin/python -c 'import json; print(json.dumps({"iterations": 20, "time_ms": 1.5, "final_residual": 1e-6, "converged": True, "residual_history": [[10, 0.1], [20, 1e-6]]}))'
+ok
+test_text_output_adapter (test_harness.ExperimentRunnerTests.test_text_output_adapter) ... ok
+test_labels_and_training_outputs (test_harness.MLTests.test_labels_and_training_outputs) ... ok
+test_plots_and_report_summary (test_harness.MLTests.test_plots_and_report_summary) ... ok
+test_binary_export_matches_generator (test_harness.ProblemTests.test_binary_export_matches_generator) ... ok
+test_project_spec_has_180_runs (test_harness.ProblemTests.test_project_spec_has_180_runs) ... ok
+test_seed_changes_by_repeat (test_harness.ProblemTests.test_seed_changes_by_repeat) ... ok
+test_sources_and_boundaries_are_deterministic (test_harness.ProblemTests.test_sources_and_boundaries_are_deterministic) ... ok
+test_exact_iteration_reference_is_repeatable (test_harness.ReferenceTests.test_exact_iteration_reference_is_repeatable) ... ok
+test_reference_converges_and_keeps_boundaries (test_harness.ReferenceTests.test_reference_converges_and_keeps_boundaries) ... ok
+test_cli_reports_precision_and_both_residuals (test_reference_precision.ReferencePrecisionTests.test_cli_reports_precision_and_both_residuals) ... ok
+test_float32_stagnation_is_reported_separately (test_reference_precision.ReferencePrecisionTests.test_float32_stagnation_is_reported_separately) ... ok
+test_float64_reference_meets_independent_criterion (test_reference_precision.ReferencePrecisionTests.test_float64_reference_meets_independent_criterion) ... ok
+test_float64_reference_passes_validator_without_downcast (test_reference_precision.ReferencePrecisionTests.test_float64_reference_passes_validator_without_downcast) ... ok
+test_float64_rejects_failed_independent_check (test_reference_precision.ReferencePrecisionTests.test_float64_rejects_failed_independent_check) ... ok
+test_identical_stalled_grid_fails_residual_validation (test_reference_precision.ReferencePrecisionTests.test_identical_stalled_grid_fails_residual_validation) ... ok
+test_nonfinite_grids_are_rejected_including_corners (test_reference_precision.ReferencePrecisionTests.test_nonfinite_grids_are_rejected_including_corners) ... ok
+test_precision_argument_validation (test_reference_precision.ReferencePrecisionTests.test_precision_argument_validation) ... ok
+test_validator_preserves_float64_reference (test_reference_precision.ReferencePrecisionTests.test_validator_preserves_float64_reference) ... ok
+test_async_candidate_verification_remains_timed (test_timing_contract.TimingContractTests.test_async_candidate_verification_remains_timed) ... ok
+test_sync_loop_and_residual_copy_remain_timed (test_timing_contract.TimingContractTests.test_sync_loop_and_residual_copy_remain_timed) ... ok
+test_correct_boundaries_and_zero_error_threshold_pass (test_validation_hardening.ValidationHardeningTests.test_correct_boundaries_and_zero_error_threshold_pass) ... ok
+test_each_boundary_including_top_corners_is_enforced (test_validation_hardening.ValidationHardeningTests.test_each_boundary_including_top_corners_is_enforced) ... ok
+test_grid_and_source_shapes_and_dtypes_rejected (test_validation_hardening.ValidationHardeningTests.test_grid_and_source_shapes_and_dtypes_rejected) ... ok
+test_natural_caps_and_strict_cli_json (test_validation_hardening.ValidationHardeningTests.test_natural_caps_and_strict_cli_json) ... ok
+test_nonfinite_grids_produce_strict_failure_json (test_validation_hardening.ValidationHardeningTests.test_nonfinite_grids_produce_strict_failure_json) ... ok
+test_nonfinite_sources_rejected_before_solve_and_residual (test_validation_hardening.ValidationHardeningTests.test_nonfinite_sources_rejected_before_solve_and_residual) ... ok
+test_problem_rejects_invalid_configuration_and_source (test_validation_hardening.ValidationHardeningTests.test_problem_rejects_invalid_configuration_and_source) ... ok
+test_solver_cli_rejects_invalid_parameters (test_validation_hardening.ValidationHardeningTests.test_solver_cli_rejects_invalid_parameters) ... ok
+test_solver_rejects_invalid_numeric_parameters (test_validation_hardening.ValidationHardeningTests.test_solver_rejects_invalid_numeric_parameters) ... ok
+test_unrepresentable_diffusion_parameter_rejected (test_validation_hardening.ValidationHardeningTests.test_unrepresentable_diffusion_parameter_rejected) ... ok
+test_valid_float32_history_and_grid_are_unchanged (test_validation_hardening.ValidationHardeningTests.test_valid_float32_history_and_grid_are_unchanged) ... ok
+test_validator_rejects_invalid_parameters (test_validation_hardening.ValidationHardeningTests.test_validator_rejects_invalid_parameters) ... ok
+test_wrong_boundary_self_comparison_fails (test_validation_hardening.ValidationHardeningTests.test_wrong_boundary_self_comparison_fails) ... ok
+
+----------------------------------------------------------------------
+Ran 35 tests in 0.985s
+
+OK
+skip existing: ('8', 'point', '1', 'sync', '1')

@@ -3,8 +3,35 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from numbers import Integral, Real
 
 import numpy as np
+
+
+def validate_real(value, name, *, positive=False, nonnegative=False):
+    if isinstance(value, (bool, np.bool_)) or not isinstance(value, Real) or not np.isfinite(value):
+        raise ValueError(f"{name} must be a finite real number")
+    if positive and value <= 0:
+        raise ValueError(f"{name} must be positive")
+    if nonnegative and value < 0:
+        raise ValueError(f"{name} must be nonnegative")
+
+
+def validate_integer(value, name, *, minimum=None):
+    if isinstance(value, (bool, np.bool_)) or not isinstance(value, Integral):
+        raise ValueError(f"{name} must be an integer")
+    if minimum is not None and value < minimum:
+        raise ValueError(f"{name} must be at least {minimum}")
+
+
+def validate_grid_array(array, name):
+    """Accept square float32/float64 arrays without casting or broadcasting."""
+    array = np.asarray(array)
+    if array.ndim != 2 or array.shape[0] != array.shape[1] or array.shape[0] < 3:
+        raise ValueError(f"{name} must be a square 2D grid of size at least 3")
+    if array.dtype.kind != "f" or array.dtype.itemsize not in (4, 8):
+        raise ValueError(f"{name} must have a real float32 or float64 dtype")
+    return array
 
 
 @dataclass(frozen=True)
@@ -19,12 +46,12 @@ class ProblemConfig:
     source_strength: float = 1.0
 
     def validate(self) -> None:
-        if self.N < 3:
-            raise ValueError("N must be at least 3")
-        if self.source not in {"point", "gaussian"}:
+        validate_integer(self.N, "N", minimum=3)
+        validate_integer(self.seed, "seed")
+        if not isinstance(self.source, str) or self.source not in {"point", "gaussian"}:
             raise ValueError("source must be 'point' or 'gaussian'")
-        if self.r <= 0:
-            raise ValueError("r must be positive")
+        validate_real(self.r, "r", positive=True)
+        validate_real(self.source_strength, "source_strength")
         if self.boundary != "dirichlet":
             raise ValueError("the reduced project scope supports Dirichlet boundaries only")
 
@@ -45,13 +72,16 @@ def make_problem(config: ProblemConfig) -> tuple[np.ndarray, np.ndarray]:
 
     source = np.zeros_like(grid)
     center = n // 2
-    if config.source == "point":
-        source[center, center] = np.float32(config.source_strength)
-    else:
-        y, x = np.mgrid[0:n, 0:n]
-        sigma = max(n / 16.0, 1.0)
-        exponent = -((x - center) ** 2 + (y - center) ** 2) / (2.0 * sigma**2)
-        source = (config.source_strength * np.exp(exponent)).astype(np.float32)
+    with np.errstate(over="ignore", invalid="ignore"):
+        if config.source == "point":
+            source[center, center] = np.float32(config.source_strength)
+        else:
+            y, x = np.mgrid[0:n, 0:n]
+            sigma = max(n / 16.0, 1.0)
+            exponent = -((x - center) ** 2 + (y - center) ** 2) / (2.0 * sigma**2)
+            source = (config.source_strength * np.exp(exponent)).astype(np.float32)
+    if not np.isfinite(source).all():
+        raise ValueError("generated source must contain only finite float32 values")
 
     # Sources never overwrite fixed boundaries.
     source[0, :] = 0.0

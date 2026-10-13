@@ -31,6 +31,52 @@ without modifying Python code. Supported placeholders are:
 Elapsed time must cover GPU solving and residual checks, but exclude process
 startup and problem generation. A non-zero exit code means the run failed.
 
+## Total solve time
+
+The primary metric is `time_ms` from CUDA events bracketing the complete solver
+loop, including every convergence check required by that solver. Keep these
+boundaries and the existing stopping semantics unchanged for Sync and D1/D2/D4/D8.
+
+Included: iteration kernels, residual resets/reductions, scalar residual copies,
+and host checkpoint decisions between the events. Async additionally copies
+candidate grids to the host and evaluates `true_max_update` before accepting
+convergence (and at the iteration cap). This necessary verification stays inside
+the interval. CUDA events do not directly time CPU instructions, but the stop
+event is submitted after verification, so the interval can include GPU idle time
+while the host verifies a candidate.
+
+Sync stops on its sampled sweep update without that independent candidate check.
+This asymmetry is intentional under the total solve time contract: necessary
+async verification may affect strategy comparisons and ML labels. Do not subtract
+it, remove it, move it after timing, or change Sync's stopping rule to force
+equivalent work.
+
+Excluded for every strategy: process/context startup, problem generation, device
+allocation, initial transfers, warm-up, post-loop final-grid transfer, post-loop
+residual evaluation where present, grid output, reference comparisons, and cleanup.
+Async's reported final residual is evaluated after the loop; its residual history
+contains local-sweep updates. Sync reports its sampled sweep-update residual.
+
+Positive `--iters K` selects fixed mode: exactly K sweeps, no convergence stopping,
+and `converged=false`. Candidate verification is absent in fixed mode. Preserve
+the existing sampling behavior: Sync checks every M sweeps and at K; normal async
+fixed mode checks only at K.
+
+## Expanded rerun override
+
+The `fair_v1` rerun explicitly overrides the default experiment specification:
+N64/N256, point/Gaussian, r1/r10/r100, Sync/D1/D2/D4/D8, seven repetitions,
+tolerance `1e-6`, residual interval 10, and maximum 2,000,000 iterations.
+There are 12 problems, 60 problem-strategy groups, and 420 runs. This does not
+change the defaults in `experiment_spec.json`.
+
+Use new outputs only: `results/fair_runs_v1.csv`, `results/fair_histories_v1.csv`,
+and `results/ml_fair_v1/`. Refuse to overwrite existing paths. Validate the exact
+matrix, unique run keys, seven repetitions per group, convergence, and finite
+results before training. Compare held-out ML predictions with always Sync,
+always D4, always D8, and the best fixed strategy; report the per-configuration
+oracle separately. These comparisons include necessary async verification.
+
 ## Preferred output
 
 The final stdout line should be one JSON object:
@@ -42,6 +88,22 @@ The final stdout line should be one JSON object:
 `residual_history` is optional but strongly recommended. The aliases `iters`,
 `gpu_time_ms`, `residual`, and textual `status` are accepted for easier
 integration with existing code.
+
+The CPU reference CLI additionally reports `precision`, `final_true_residual`,
+and `final_residual_iteration`. Its existing `final_residual` is the last sampled
+sweep update, which may precede the final grid at an iteration cap. If no update
+checkpoint was sampled, both `final_residual` and `final_residual_iteration` are
+JSON `null`. `final_true_residual` evaluates the completed grid in float64;
+non-finite residual values serialize as `null`, never bare Infinity or NaN.
+The default float32 stopping rule is unchanged; explicit `--precision float64`
+also requires the independent residual to pass before declaring convergence.
+Non-converged CPU outputs remain unsuitable for the experiment runner.
+
+The converged-grid validator preserves float32/float64 input precision, reports
+`gpu_boundary_correct` and `reference_boundary_correct`, and requires both full
+Dirichlet boundary rings to match the generated problem. Its existing error and
+independent residual thresholds remain unchanged. Non-finite grids fail validation;
+unsupported shapes/dtypes, non-finite sources, and invalid parameters are rejected.
 
 ## Existing text output fallback
 

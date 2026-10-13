@@ -1,0 +1,7 @@
+{
+  "complete": true,
+  "cpu_records": 8,
+  "gpu_records": 40,
+  "gpu_passes": 0,
+  "ready_for_full_benchmark": false
+}

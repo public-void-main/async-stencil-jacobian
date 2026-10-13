@@ -1,0 +1,58 @@
+[
+  {
+    "N": 32,
+    "source": "point",
+    "r": 1,
+    "initial_bitwise_equal": true,
+    "source_bitwise_equal": true
+  },
+  {
+    "N": 32,
+    "source": "point",
+    "r": 100,
+    "initial_bitwise_equal": true,
+    "source_bitwise_equal": true
+  },
+  {
+    "N": 32,
+    "source": "gaussian",
+    "r": 1,
+    "initial_bitwise_equal": true,
+    "source_bitwise_equal": true
+  },
+  {
+    "N": 32,
+    "source": "gaussian",
+    "r": 100,
+    "initial_bitwise_equal": true,
+    "source_bitwise_equal": true
+  },
+  {
+    "N": 64,
+    "source": "point",
+    "r": 1,
+    "initial_bitwise_equal": true,
+    "source_bitwise_equal": true
+  },
+  {
+    "N": 64,
+    "source": "point",
+    "r": 100,
+    "initial_bitwise_equal": true,
+    "source_bitwise_equal": true
+  },
+  {
+    "N": 64,
+    "source": "gaussian",
+    "r": 1,
+    "initial_bitwise_equal": true,
+    "source_bitwise_equal": true
+  },
+  {
+    "N": 64,
+    "source": "gaussian",
+    "r": 100,
+    "initial_bitwise_equal": true,
+    "source_bitwise_equal": true
+  }
+]

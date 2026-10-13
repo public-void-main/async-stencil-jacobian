@@ -1,0 +1,62 @@
+{
+  "scope": "Observed exploratory timings; not validated solver-performance comparisons",
+  "fixed_strategy_totals_ms": {
+    "sync": 160.929309,
+    "D1": 163.185313,
+    "D2": 108.649538,
+    "D4": 93.474946,
+    "D8": 92.162274
+  },
+  "best_fixed_strategy": "D8",
+  "per_configuration_oracle_total_ms": 90.58614499999999,
+  "oracle_labels": [
+    {
+      "N": 32,
+      "source": "gaussian",
+      "r": 1,
+      "strategy": "D8"
+    },
+    {
+      "N": 32,
+      "source": "gaussian",
+      "r": 100,
+      "strategy": "D8"
+    },
+    {
+      "N": 32,
+      "source": "point",
+      "r": 1,
+      "strategy": "D4"
+    },
+    {
+      "N": 32,
+      "source": "point",
+      "r": 100,
+      "strategy": "D8"
+    },
+    {
+      "N": 64,
+      "source": "gaussian",
+      "r": 1,
+      "strategy": "D4"
+    },
+    {
+      "N": 64,
+      "source": "gaussian",
+      "r": 100,
+      "strategy": "D8"
+    },
+    {
+      "N": 64,
+      "source": "point",
+      "r": 1,
+      "strategy": "D8"
+    },
+    {
+      "N": 64,
+      "source": "point",
+      "r": 100,
+      "strategy": "D2"
+    }
+  ]
+}

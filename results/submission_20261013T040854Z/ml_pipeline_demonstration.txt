@@ -1,0 +1,6 @@
+test_labels_and_training_outputs (harness_ml.tests.test_harness.MLTests.test_labels_and_training_outputs) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.076s
+
+OK

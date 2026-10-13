@@ -1,0 +1,2 @@
+[info] NVIDIA GeForce RTX 5050 Laptop GPU | tile 32x8 | blocks/SM 6 | theoretical occupancy 100.0% | SMs 20 | blocks in grid 4
+[info] mode=async D=2 iters=2670 time=5.690 ms reported_res=7.153e-07 true_res=7.153e-07

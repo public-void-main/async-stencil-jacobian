@@ -17,16 +17,18 @@
 //   {"iterations":..,"time_ms":..,"final_residual":..,"converged":..,"residual_history":[[it,res],..]}
 // Everything else goes to stderr.
 //
-// Counting convention: 1 iteration = 1 Jacobi sweep. Residual (max |update| of one
-// sweep) is sampled every M iterations; each free-running launch is exactly M sweeps
-// (with D = 4, 8 the last round of a launch is shorter), so iteration counts are
-// directly comparable with the sync solver.
+// Counting convention: 1 iteration = 1 Jacobi sweep. Convergence mode samples
+// max |update| at multiples of M and at the iteration cap. Each launch performs
+// at most D sweeps, shortened to reach a checkpoint or the cap exactly.
+// final_residual is the independently checked residual of the completed grid;
+// residual_history contains the sampled last-sweep updates.
 
 #include "common.h"
 #include <cuda_runtime.h>
 #include <cstdlib>
 #include <cstring>
 #include "async_kernel.cuh"
+#include "residual_schedule.h"
 
 #define CUDA_CHECK(call)                                                         \
     do {                                                                         \
@@ -38,7 +40,7 @@
         }                                                                        \
     } while (0)
 
-// Host-side check of the true residual of a final grid (outside the timed region).
+// Host-side residual of a completed grid (also used for convergence candidates).
 static double true_max_update(const std::vector<float>& u, const Problem& p) {
     const int N = p.N; double m = 0.0;
     for (int y = 1; y < N - 1; ++y)
@@ -120,7 +122,7 @@ int main(int argc, char** argv) {
     const long long limit = fixed_mode ? fixed_iters : cfg.max_iters;
     Result res;
     float* cur = d_a;                      // holds the current state
-    float* nxt = d_b;                      // barrier mode only
+    float* nxt = d_b;                      // output buffer in both modes
     long long it = 0;
     double resid = 0.0;
     bool conv = false;
@@ -140,7 +142,7 @@ int main(int argc, char** argv) {
     if (barrier) {
         // Debug / sync-equivalent: 1 sweep per launch, ping-pong, kernel boundary = global barrier.
         while (it < limit) {
-            const bool check = ((it + 1) % cfg.M == 0) || (fixed_mode && it + 1 == limit);
+            const bool check = ((it + 1) % cfg.M == 0) || (it + 1 == limit);
             if (check) CUDA_CHECK(cudaMemsetAsync(d_res, 0, sizeof(unsigned int)));
             async_jacobi_kernel<<<grid, block>>>(cur, nxt, d_src, N, prob.r, prob.denom, 1, 1, check ? 1 : 0, d_res);
             std::swap(cur, nxt);
@@ -149,23 +151,69 @@ int main(int argc, char** argv) {
                 resid = read_residual();
                 if (!fixed_mode) {
                     res.residual_history.push_back({it, resid});
-                    if (resid < cfg.tol) { conv = true; break; }
+                    if (resid < cfg.tol || it == limit) {
+                        // Verify convergence using the actual current grid.
+                        std::vector<float> candidate((size_t)N * N);
+                        CUDA_CHECK(cudaMemcpy(
+                            candidate.data(), cur,
+                            (size_t)N * N * sizeof(float),
+                            cudaMemcpyDeviceToHost));
+
+                        const double checked_resid =
+                            true_max_update(candidate, prob);
+
+                        resid = checked_resid;
+                        if (checked_resid < cfg.tol) {
+                            conv = true;
+                            break;
+                        }
+                    }
                 }
             }
         }
     } else {
-        // Free-running: in-place, one launch = M sweeps in rounds of D, no grid barrier inside.
+        // Race-free delayed-halo mode: one local round per launch.
         while (it < limit) {
-            const int sw = (int)std::min<long long>(cfg.M, limit - it);
-            const bool check = !fixed_mode || (it + sw == limit);
-            if (check) CUDA_CHECK(cudaMemsetAsync(d_res, 0, sizeof(unsigned int)));
-            async_jacobi_kernel<<<grid, block>>>(cur, cur, d_src, N, prob.r, prob.denom, cfg.D, sw, check ? 1 : 0, d_res);
+            const ResidualRound round =
+                next_residual_round(it, limit, cfg.D, cfg.M, fixed_mode);
+            const int sw = round.sweeps;
+            const bool check = round.check;
+
+            if (check)
+                CUDA_CHECK(cudaMemsetAsync(d_res, 0, sizeof(unsigned int)));
+
+            async_jacobi_kernel<<<grid, block>>>(
+                cur, nxt, d_src, N, prob.r, prob.denom,
+                cfg.D, sw, check ? 1 : 0, d_res
+            );
+            CUDA_CHECK(cudaGetLastError());
+
+            std::swap(cur, nxt);
             it += sw;
+
             if (check) {
                 resid = read_residual();
+
                 if (!fixed_mode) {
                     res.residual_history.push_back({it, resid});
-                    if (resid < cfg.tol) { conv = true; break; }
+
+                    if (resid < cfg.tol || it == limit) {
+                        std::vector<float> candidate((size_t)N * N);
+                        CUDA_CHECK(cudaMemcpy(
+                            candidate.data(), cur,
+                            (size_t)N * N * sizeof(float),
+                            cudaMemcpyDeviceToHost
+                        ));
+
+                        const double checked_resid =
+                            true_max_update(candidate, prob);
+
+                        resid = checked_resid;
+                        if (checked_resid < cfg.tol) {
+                            conv = true;
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -179,13 +227,13 @@ int main(int argc, char** argv) {
     res.converged = conv;
     res.iterations = it;
     res.time_ms = ms;
-    res.final_residual = resid;
     res.final_grid.resize((size_t)N * N);
     CUDA_CHECK(cudaMemcpy(res.final_grid.data(), cur, bytes, cudaMemcpyDeviceToHost));
+    res.final_residual = true_max_update(res.final_grid, prob);
 
     // Sanity (outside timing): the true max update of the final grid.
     fprintf(stderr, "[info] mode=%s D=%d iters=%lld time=%.3f ms reported_res=%.3e true_res=%.3e\n",
-            barrier ? "barrier" : "async", cfg.D, it, ms, resid, true_max_update(res.final_grid, prob));
+            barrier ? "barrier" : "async", cfg.D, it, ms, res.final_residual, res.final_residual);
     if (dump && !write_npy(dump, res.final_grid, N)) fprintf(stderr, "could not write %s\n", dump);
 
     cudaFree(d_a); cudaFree(d_b); cudaFree(d_src); cudaFree(d_res);

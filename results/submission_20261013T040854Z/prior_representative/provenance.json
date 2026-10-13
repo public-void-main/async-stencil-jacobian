@@ -1,0 +1,22 @@
+{
+  "repository": "/home/banana_pudding/async-stencil-jacobian",
+  "python": "/home/banana_pudding/async-stencil-jacobian/.venv/bin/python",
+  "sha256": {
+    "sync_jacobi.cu": "4a4ced40e5f71b98ffa761b0e0b486ea799f7e1cf9449f4abf44f92d34e62977",
+    "async/async_solver.cu": "5304935b75674915348d999d2d02688644812b9d1cd608cc2fb0f75c1a49eab1",
+    "async/async_kernel.cuh": "d37e03b157af8b9188929ea7457c4c316ac81759807d9440d0281b0cbb91aa3f",
+    "async/common.h": "bd8d6679fe685c21d70a6072e6672b1d1767679ccdaa3f2948c9318b2470c584",
+    "async/residual_schedule.h": "b69e1700ce68951668e8ba4e42373ba1ba0c0b11e607d069c26f7f9b7c07f208",
+    "build/sync_jacobi": "9cde982353197f73210b59553066cf96a8f6a34704a573cae014f8f3ae4b51d3",
+    "build/async_jacobi": "dd120fc498dd73178f3d60e2b34024c36f4e9a51332852494c8387b920feb4e6",
+    "harness_ml/reference.py": "209477b7f344779fa35839aa053a2d05e3d28f00fecace436c4bad291b7a046d",
+    "harness_ml/problem.py": "8c52c7870bbcface52e7187a30d43711875d08c8bd20c4e4447f2aa76f1e2a10",
+    "harness_ml/solver_cli.py": "83eb1226087e8a0f2f86c6b3ad130dc103872cfa974aceb07b068a496a4a0b45",
+    "harness_ml/validate_converged_grid.py": "51c054559c406a4a5e017f0f22150580158ace42a10751e41be75a67885be093"
+  },
+  "solver_tolerance": 1e-06,
+  "validation_tolerance": 0.0001,
+  "max_error": 0.0001,
+  "residual_interval": 10,
+  "max_iters": 2000000
+}

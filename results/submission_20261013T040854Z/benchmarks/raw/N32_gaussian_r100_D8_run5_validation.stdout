@@ -1,0 +1,11 @@
+{
+  "max_abs_error": 0.00022545202684653987,
+  "rmse": 0.00011008485736176538,
+  "gpu_true_residual": 1.1415553458959948e-05,
+  "reference_true_residual": 9.520562116449582e-11,
+  "gpu_boundary_correct": true,
+  "reference_boundary_correct": true,
+  "max_error_threshold": 0.0001,
+  "residual_threshold": 0.0001,
+  "passed": false
+}

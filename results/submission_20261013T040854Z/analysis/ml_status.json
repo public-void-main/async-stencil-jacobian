@@ -1,0 +1,8 @@
+{
+  "valid_configurations": 0,
+  "valid_cases": [],
+  "method": "Use existing tree only on complete accurate configurations; LOOCV by problem",
+  "performance_claim": "No prediction or validated speedup claim from rejected rows",
+  "status": "NOT_TRAINED_INSUFFICIENT_ACCURATE_CONFIGURATIONS",
+  "explanation": "Existing synthetic unit tests demonstrate the pipeline, not predictive performance."
+}

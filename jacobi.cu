@@ -4,7 +4,14 @@
 #include <math.h>
 #include <cuda_runtime.h>
 
-#define BLOCK_SIZE 256
+#ifndef BLOCK_X
+#define BLOCK_X 16
+#endif
+
+#ifndef BLOCK_Y
+#define BLOCK_Y 16
+#endif
+
 #define VALIDATION_LIMIT 10000
 
 #define CHECK(call) do {                                      \
@@ -16,7 +23,10 @@
     }                                                         \
 } while (0)
 
-/* One CUDA thread per cell; five-point Jacobi stencil. */
+/*
+ * Two-dimensional CUDA Jacobi kernel.
+ * Each thread handles one grid cell.
+ */
 __global__ void jacobi_step(
     const float *old_grid,
     float *new_grid,
@@ -24,20 +34,20 @@ __global__ void jacobi_step(
     int N,
     int check_residual)
 {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    int total = N * N;
+    int j = blockIdx.x * blockDim.x + threadIdx.x;
+    int i = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (idx >= total)
+    if (i >= N || j >= N)
         return;
 
-    int i = idx / N;
-    int j = idx % N;
+    int idx = i * N + j;
 
-    // Fixed boundaries remain unchanged.
+    // Fixed boundaries: never update boundary cells.
     if (i == 0 || i == N - 1 ||
         j == 0 || j == N - 1)
         return;
 
+    // Five-point Jacobi stencil.
     float value = 0.25f * (
         old_grid[(i - 1) * N + j] +
         old_grid[(i + 1) * N + j] +
@@ -49,9 +59,9 @@ __global__ void jacobi_step(
 
     if (check_residual) {
         float diff = fabsf(value - old_grid[idx]);
-        unsigned int bits = __float_as_uint(diff);
 
-        // Maximum absolute update across all interior cells.
+        // Atomic maximum of nonnegative float bit patterns.
+        unsigned int bits = __float_as_uint(diff);
         atomicMax(max_residual_bits, bits);
     }
 }
@@ -61,12 +71,13 @@ void initialize_grid(float *grid, int N)
 {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            grid[i * N + j] = (i == 0) ? 100.0f : 0.0f;
+            grid[i * N + j] =
+                (i == 0) ? 100.0f : 0.0f;
         }
     }
 }
 
-/* CPU reference: same initial condition and Jacobi update. */
+/* CPU reference using the same Jacobi update. */
 void cpu_jacobi(float *grid, int N, int iterations)
 {
     size_t bytes = (size_t)N * N * sizeof(float);
@@ -75,7 +86,7 @@ void cpu_jacobi(float *grid, int N, int iterations)
     float *b = (float *)malloc(bytes);
 
     if (a == NULL || b == NULL) {
-        fprintf(stderr, "CPU memory allocation failed\n");
+        fprintf(stderr, "CPU allocation failed\n");
         free(a);
         free(b);
         exit(EXIT_FAILURE);
@@ -104,9 +115,8 @@ void cpu_jacobi(float *grid, int N, int iterations)
         new_grid = temp;
     }
 
-    for (int i = 0; i < N * N; i++) {
+    for (int i = 0; i < N * N; i++)
         grid[i] = old_grid[i];
-    }
 
     free(a);
     free(b);
@@ -119,7 +129,7 @@ void run_solver(int N, int max_iters, float tolerance)
     float *h_grid = (float *)malloc(bytes);
 
     if (h_grid == NULL) {
-        fprintf(stderr, "Host memory allocation failed\n");
+        fprintf(stderr, "Host allocation failed\n");
         exit(EXIT_FAILURE);
     }
 
@@ -139,8 +149,12 @@ void run_solver(int N, int max_iters, float tolerance)
     CHECK(cudaMemcpy(d_b, h_grid, bytes,
                      cudaMemcpyHostToDevice));
 
-    int total = N * N;
-    int blocks = (total + BLOCK_SIZE - 1) / BLOCK_SIZE;
+    dim3 block(BLOCK_X, BLOCK_Y);
+
+    dim3 grid(
+        (N + BLOCK_X - 1) / BLOCK_X,
+        (N + BLOCK_Y - 1) / BLOCK_Y
+    );
 
     float *old_grid = d_a;
     float *new_grid = d_b;
@@ -153,43 +167,39 @@ void run_solver(int N, int max_iters, float tolerance)
     CHECK(cudaEventCreate(&start));
     CHECK(cudaEventCreate(&stop));
 
-    // Time GPU iterations, including residual checks.
     CHECK(cudaEventRecord(start));
 
     for (int iter = 1; iter <= max_iters; iter++) {
-        int check_residual = (iter % 10 == 0);
+        int check = (iter % 10 == 0);
 
-        if (check_residual) {
+        if (check) {
             CHECK(cudaMemset(d_max_residual, 0,
                              sizeof(unsigned int)));
         }
 
-        jacobi_step<<<blocks, BLOCK_SIZE>>>(
+        jacobi_step<<<grid, block>>>(
             old_grid,
             new_grid,
             d_max_residual,
             N,
-            check_residual
+            check
         );
 
         CHECK(cudaGetLastError());
 
-        // Swap after launching each iteration.
+        // Swap the ping-pong buffers.
         float *temp = old_grid;
         old_grid = new_grid;
         new_grid = temp;
 
         iterations = iter;
 
-        if (check_residual) {
+        if (check) {
             unsigned int bits;
 
-            CHECK(cudaMemcpy(
-                &bits,
-                d_max_residual,
-                sizeof(bits),
-                cudaMemcpyDeviceToHost
-            ));
+            CHECK(cudaMemcpy(&bits, d_max_residual,
+                             sizeof(bits),
+                             cudaMemcpyDeviceToHost));
 
             union {
                 unsigned int u;
@@ -216,17 +226,31 @@ void run_solver(int N, int max_iters, float tolerance)
                      cudaMemcpyDeviceToHost));
 
     printf("\n====================================\n");
-    printf("Grid size N           : %d\n", N);
+    printf("GPU                   : ");
+    {
+        cudaDeviceProp prop;
+        int device;
+        CHECK(cudaGetDevice(&device));
+        CHECK(cudaGetDeviceProperties(&prop, device));
+        printf("%s\n", prop.name);
+    }
+
+    printf("Grid size             : %d x %d\n", N, N);
+    printf("Block shape           : %d x %d\n",
+           BLOCK_X, BLOCK_Y);
+    printf("Threads per block     : %d\n",
+           BLOCK_X * BLOCK_Y);
     printf("Iterations            : %d\n", iterations);
     printf("Final residual        : %.8e\n", residual);
     printf("Tolerance             : %.8e\n", tolerance);
     printf("Convergence status    : %s\n",
-           converged ? "TOLERANCE REACHED" : "MAX ITERATIONS REACHED");
+           converged ? "TOLERANCE REACHED"
+                     : "MAX ITERATIONS REACHED");
     printf("GPU time              : %.3f ms\n", milliseconds);
-    printf("Center value (GPU)    : %.6f\n",
+    printf("Center value          : %.6f\n",
            h_grid[(N / 2) * N + (N / 2)]);
 
-    // Validate against CPU at manageable iteration counts.
+    // CPU validation for runs of 10,000 iterations or fewer.
     if (iterations <= VALIDATION_LIMIT) {
         float *cpu_grid = (float *)malloc(bytes);
 
@@ -243,23 +267,19 @@ void run_solver(int N, int max_iters, float tolerance)
         for (int i = 0; i < N * N; i++) {
             float error = fabsf(h_grid[i] - cpu_grid[i]);
 
-            if (error > max_error) {
+            if (error > max_error)
                 max_error = error;
-            }
 
             sum_squared_error += (double)error * error;
         }
 
-        double rmse = sqrt(sum_squared_error / ((double)N * N));
-
         printf("Maximum CPU/GPU error : %.8e\n", max_error);
-        printf("CPU/GPU RMSE          : %.8e\n", rmse);
+        printf("CPU/GPU RMSE          : %.8e\n",
+               sqrt(sum_squared_error / ((double)N * N)));
 
         free(cpu_grid);
     } else {
-        printf("CPU/GPU validation    : skipped for long run\n");
-        printf("Use the earlier 10000-iteration comparison "
-               "as the baseline check.\n");
+        printf("CPU/GPU validation    : skipped (long run)\n");
     }
 
     printf("====================================\n");
@@ -293,6 +313,5 @@ int main(void)
     run_solver(1024, max_iters, tolerance);
 
     CHECK(cudaDeviceReset());
-
     return 0;
 }

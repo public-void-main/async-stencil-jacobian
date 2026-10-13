@@ -1,0 +1,9 @@
+N,source,r,initial_bitwise_equal,source_bitwise_equal,source_different_cells,source_max_abs_difference
+64,point,1,True,True,0,0.0
+64,point,100,True,True,0,0.0
+64,gaussian,1,True,True,0,0.0
+64,gaussian,100,True,True,0,0.0
+256,point,1,True,True,0,0.0
+256,point,100,True,True,0,0.0
+256,gaussian,1,True,True,0,0.0
+256,gaussian,100,True,True,0,0.0

@@ -1,0 +1,12 @@
+{
+  "status": "COMPLETE",
+  "rows": 280,
+  "groups": 40,
+  "repetitions_per_group": 7,
+  "history_curves": 280,
+  "solver_converged_rows": 280,
+  "boundary_correct_rows": 280,
+  "accepted_rows": 0,
+  "complete_valid_configurations": 0,
+  "invalid_rows_retained": 280
+}

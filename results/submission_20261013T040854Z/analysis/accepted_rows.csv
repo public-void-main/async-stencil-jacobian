@@ -1,0 +1,1 @@
+N,source,r,strategy,run_id,iters,time_ms,final_residual,converged,gpu_true_residual,reference_true_residual,max_abs_error,rmse,gpu_boundary_correct,reference_boundary_correct,numerically_accepted,exit_code,validator_exit_code,status

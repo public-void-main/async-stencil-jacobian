@@ -1,0 +1,2 @@
+[info] NVIDIA GeForce RTX 5050 Laptop GPU | block 32x8 | blocks/SM 6 | theoretical occupancy 100.0%
+[info] sync iters=119110 time=392.021 ms (3.29 us/iter) residual=9.537e-07

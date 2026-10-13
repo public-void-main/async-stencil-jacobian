@@ -1,0 +1,66 @@
+[
+  {
+    "N": 256,
+    "source": "gaussian",
+    "r": 100,
+    "iterations": 228710,
+    "converged": true,
+    "final_true_residual": 9.994849392569449e-11
+  },
+  {
+    "N": 256,
+    "source": "gaussian",
+    "r": 1,
+    "iterations": 316040,
+    "converged": true,
+    "final_true_residual": 9.993073035730049e-11
+  },
+  {
+    "N": 256,
+    "source": "point",
+    "r": 100,
+    "iterations": 227730,
+    "converged": true,
+    "final_true_residual": 9.991651950258529e-11
+  },
+  {
+    "N": 256,
+    "source": "point",
+    "r": 1,
+    "iterations": 280390,
+    "converged": true,
+    "final_true_residual": 9.99875737761613e-11
+  },
+  {
+    "N": 64,
+    "source": "gaussian",
+    "r": 100,
+    "iterations": 16160,
+    "converged": true,
+    "final_true_residual": 9.886136353998154e-11
+  },
+  {
+    "N": 64,
+    "source": "gaussian",
+    "r": 1,
+    "iterations": 20320,
+    "converged": true,
+    "final_true_residual": 9.901413022816996e-11
+  },
+  {
+    "N": 64,
+    "source": "point",
+    "r": 100,
+    "iterations": 16150,
+    "converged": true,
+    "final_true_residual": 9.961809155356605e-11
+  },
+  {
+    "N": 64,
+    "source": "point",
+    "r": 1,
+    "iterations": 19920,
+    "converged": true,
+    "final_true_residual": 9.989875593419129e-11
+  }
+]

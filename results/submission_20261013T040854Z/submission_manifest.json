@@ -1,0 +1,17 @@
+{
+  "report": "report.md",
+  "pdf": "report/report_print.pdf",
+  "result_directory": "results/submission_20261013T040854Z",
+  "numerical_status": "NO_ACCEPTED_GPU_CONFIGURATIONS",
+  "benchmarks": "280 exploratory runs; 40 groups; seven repetitions",
+  "ml_status": "Not trained: zero numerically accepted configurations",
+  "tests": {
+    "python_tests.txt": 0,
+    "host_test_build.txt": 0,
+    "host_test_run.txt": 0,
+    "ml_pipeline_demonstration.txt": 0,
+    "diff_check.txt": 0
+  },
+  "solver_changes_this_study": false,
+  "historical_outputs_preserved": true
+}

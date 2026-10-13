@@ -101,7 +101,7 @@ __global__ void async_jacobi_kernel(const float* in, float* out,
         }
 
         // ---- 3. write the tile back (interior cells only, never Dirichlet) ----
-        if (!fixed_cell) __stcg(out + gi, s[cur][ty + 1][tx + 1]);
+        __stcg(out + gi, s[cur][ty + 1][tx + 1]);
     }
 
     // ---- optional residual: block max, then one atomicMax per block ----
